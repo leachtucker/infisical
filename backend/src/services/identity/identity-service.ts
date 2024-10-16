@@ -256,6 +256,8 @@ export const identityServiceFactory = ({
       search
     });
 
+    // console.log({ identityMemberships });
+
     return { identityMemberships, totalCount };
   };
 

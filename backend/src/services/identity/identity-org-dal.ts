@@ -52,7 +52,8 @@ export const identityOrgDALFactory = (db: TDbClient) => {
         .select(
           selectAllTableCols(TableName.IdentityOrgMembership),
           db.ref("name").withSchema(TableName.Identity).as("identityName"),
-          db.ref("authMethod").withSchema(TableName.Identity).as("identityAuthMethod")
+          db.ref("authMethod").withSchema(TableName.Identity).as("identityAuthMethod"),
+          db.ref("isDisabled").withSchema(TableName.Identity).as("identityIsDisabled")
         )
         .where(filter)
         .as("paginatedIdentity");
@@ -84,7 +85,8 @@ export const identityOrgDALFactory = (db: TDbClient) => {
           db.ref("updatedAt").withSchema("paginatedIdentity"),
           db.ref("identityId").withSchema("paginatedIdentity"),
           db.ref("identityName").withSchema("paginatedIdentity"),
-          db.ref("identityAuthMethod").withSchema("paginatedIdentity")
+          db.ref("identityAuthMethod").withSchema("paginatedIdentity"),
+          db.ref("identityIsDisabled").withSchema("paginatedIdentity")
         )
         // cr stands for custom role
         .select(db.ref("id").as("crId").withSchema(TableName.OrgRoles))
@@ -115,6 +117,7 @@ export const identityOrgDALFactory = (db: TDbClient) => {
           identityId,
           identityName,
           identityAuthMethod,
+          identityIsDisabled,
           role,
           roleId,
           id,
@@ -141,7 +144,8 @@ export const identityOrgDALFactory = (db: TDbClient) => {
           identity: {
             id: identityId,
             name: identityName,
-            authMethod: identityAuthMethod as string
+            authMethod: identityAuthMethod as string,
+            isDisabled: identityIsDisabled
           }
         }),
         childrenMapper: [
