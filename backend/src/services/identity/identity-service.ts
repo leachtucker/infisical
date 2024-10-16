@@ -108,7 +108,8 @@ export const identityServiceFactory = ({
     actorId,
     actorAuthMethod,
     actorOrgId,
-    metadata
+    metadata,
+    isDisabled
   }: TUpdateIdentityDTO) => {
     const identityOrgMembership = await identityOrgMembershipDAL.findOne({ identityId: id });
     if (!identityOrgMembership) throw new NotFoundError({ message: `Failed to find identity with id ${id}` });
@@ -172,6 +173,9 @@ export const identityServiceFactory = ({
             tx
           );
         }
+      }
+      if (isDisabled != null) {
+        await identityDAL.updateById(id, { isDisabled }, tx);
       }
       return newIdentity;
     });

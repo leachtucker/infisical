@@ -3,9 +3,11 @@ import { useRouter } from "next/router";
 import {
   faArrowDown,
   faArrowUp,
+  faCheck,
   faEllipsis,
   faMagnifyingGlass,
-  faServer
+  faServer,
+  faXmark
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { twMerge } from "tailwind-merge";
@@ -130,6 +132,39 @@ export const IdentityTable = ({ handlePopUpOpen }: Props) => {
     }
   };
 
+  const handleToggleDisableIdentity = async ({
+    identityId,
+    isDisabled
+  }: {
+    identityId: string;
+    isDisabled: boolean;
+  }) => {
+    const nextState = !isDisabled;
+    const notiVerb = nextState ? "disabled" : "enabled";
+
+    try {
+      await updateMutateAsync({
+        identityId,
+        isDisabled: nextState,
+        organizationId
+      });
+
+      createNotification({
+        text: `Successfully ${notiVerb} identity`,
+        type: "success"
+      });
+    } catch (err) {
+      console.error(err);
+      const error = err as any;
+      const text = error?.response?.data?.message ?? `Failed to ${notiVerb} identity`;
+
+      createNotification({
+        text,
+        type: "error"
+      });
+    }
+  };
+
   return (
     <div>
       <Input
@@ -184,106 +219,144 @@ export const IdentityTable = ({ handlePopUpOpen }: Props) => {
                   </IconButton>
                 </div>
               </Th> */}
+              <Th>
+                <div className="flex justify-center">Enabled</div>
+              </Th>
+
               <Th className="w-16">{isFetching ? <Spinner size="xs" /> : null}</Th>
             </Tr>
           </THead>
           <TBody>
-            {isLoading && <TableSkeleton columns={3} innerKey="org-identities" />}
+            {isLoading && <TableSkeleton columns={4} innerKey="org-identities" />}
             {!isLoading &&
-              data?.identityMemberships.map(({ identity: { id, name }, role, customRole }) => {
-                return (
-                  <Tr
-                    className="h-10 cursor-pointer transition-colors duration-100 hover:bg-mineshaft-700"
-                    key={`identity-${id}`}
-                    onClick={() => router.push(`/org/${organizationId}/identities/${id}`)}
-                  >
-                    <Td>{name}</Td>
-                    <Td>
-                      <OrgPermissionCan
-                        I={OrgPermissionActions.Edit}
-                        a={OrgPermissionSubjects.Identity}
-                      >
-                        {(isAllowed) => {
-                          return (
-                            <Select
-                              value={role === "custom" ? (customRole?.slug as string) : role}
-                              isDisabled={!isAllowed}
-                              className="w-48 bg-mineshaft-600"
-                              dropdownContainerClassName="border border-mineshaft-600 bg-mineshaft-800"
-                              onValueChange={(selectedRole) =>
-                                handleChangeRole({
-                                  identityId: id,
-                                  role: selectedRole
-                                })
-                              }
-                            >
-                              {(roles || []).map(({ slug, name: roleName }) => (
-                                <SelectItem value={slug} key={`owner-option-${slug}`}>
-                                  {roleName}
-                                </SelectItem>
-                              ))}
-                            </Select>
-                          );
-                        }}
-                      </OrgPermissionCan>
-                    </Td>
-                    <Td>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild className="rounded-lg">
-                          <div className="flex justify-center hover:text-primary-400 data-[state=open]:text-primary-400">
-                            <FontAwesomeIcon size="sm" icon={faEllipsis} />
-                          </div>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="start" className="p-1">
-                          <OrgPermissionCan
-                            I={OrgPermissionActions.Edit}
-                            a={OrgPermissionSubjects.Identity}
-                          >
-                            {(isAllowed) => (
-                              <DropdownMenuItem
-                                className={twMerge(
-                                  !isAllowed && "pointer-events-none cursor-not-allowed opacity-50"
-                                )}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  router.push(`/org/${organizationId}/identities/${id}`);
-                                }}
-                                disabled={!isAllowed}
-                              >
-                                Edit Identity
-                              </DropdownMenuItem>
-                            )}
-                          </OrgPermissionCan>
-                          <OrgPermissionCan
-                            I={OrgPermissionActions.Delete}
-                            a={OrgPermissionSubjects.Identity}
-                          >
-                            {(isAllowed) => (
-                              <DropdownMenuItem
-                                className={twMerge(
-                                  isAllowed
-                                    ? "hover:!bg-red-500 hover:!text-white"
-                                    : "pointer-events-none cursor-not-allowed opacity-50"
-                                )}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handlePopUpOpen("deleteIdentity", {
+              data?.identityMemberships.map(
+                ({ identity: { id, name, isDisabled }, role, customRole }) => {
+                  return (
+                    <Tr
+                      className="h-10 cursor-pointer transition-colors duration-100 hover:bg-mineshaft-700"
+                      key={`identity-${id}`}
+                      onClick={() => router.push(`/org/${organizationId}/identities/${id}`)}
+                    >
+                      <Td>{name}</Td>
+                      <Td>
+                        <OrgPermissionCan
+                          I={OrgPermissionActions.Edit}
+                          a={OrgPermissionSubjects.Identity}
+                        >
+                          {(isAllowed) => {
+                            return (
+                              <Select
+                                value={role === "custom" ? (customRole?.slug as string) : role}
+                                isDisabled={!isAllowed}
+                                className="w-48 bg-mineshaft-600"
+                                dropdownContainerClassName="border border-mineshaft-600 bg-mineshaft-800"
+                                onValueChange={(selectedRole) =>
+                                  handleChangeRole({
                                     identityId: id,
-                                    name
-                                  });
-                                }}
-                                disabled={!isAllowed}
+                                    role: selectedRole
+                                  })
+                                }
                               >
-                                Delete Identity
-                              </DropdownMenuItem>
-                            )}
-                          </OrgPermissionCan>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </Td>
-                  </Tr>
-                );
-              })}
+                                {(roles || []).map(({ slug, name: roleName }) => (
+                                  <SelectItem value={slug} key={`owner-option-${slug}`}>
+                                    {roleName}
+                                  </SelectItem>
+                                ))}
+                              </Select>
+                            );
+                          }}
+                        </OrgPermissionCan>
+                      </Td>
+                      <Td>
+                        <div
+                          className={twMerge(
+                            "flex justify-center",
+                            !isDisabled ? "text-green-600" : "text-red-600"
+                          )}
+                        >
+                          <FontAwesomeIcon icon={!isDisabled ? faCheck : faXmark} />
+                        </div>
+                      </Td>
+
+                      <Td>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild className="rounded-lg">
+                            <div className="flex justify-center hover:text-primary-400 data-[state=open]:text-primary-400">
+                              <FontAwesomeIcon size="sm" icon={faEllipsis} />
+                            </div>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="start" className="p-1">
+                            <OrgPermissionCan
+                              I={OrgPermissionActions.Edit}
+                              a={OrgPermissionSubjects.Identity}
+                            >
+                              {(isAllowed) => (
+                                <DropdownMenuItem
+                                  className={twMerge(
+                                    !isAllowed &&
+                                      "pointer-events-none cursor-not-allowed opacity-50"
+                                  )}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleToggleDisableIdentity({ identityId: id, isDisabled });
+                                  }}
+                                  disabled={!isAllowed}
+                                >
+                                  {isDisabled ? "Enable" : "Disable"} Identity
+                                </DropdownMenuItem>
+                              )}
+                            </OrgPermissionCan>
+                            <OrgPermissionCan
+                              I={OrgPermissionActions.Edit}
+                              a={OrgPermissionSubjects.Identity}
+                            >
+                              {(isAllowed) => (
+                                <DropdownMenuItem
+                                  className={twMerge(
+                                    !isAllowed &&
+                                      "pointer-events-none cursor-not-allowed opacity-50"
+                                  )}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    router.push(`/org/${organizationId}/identities/${id}`);
+                                  }}
+                                  disabled={!isAllowed}
+                                >
+                                  Edit Identity
+                                </DropdownMenuItem>
+                              )}
+                            </OrgPermissionCan>
+                            <OrgPermissionCan
+                              I={OrgPermissionActions.Delete}
+                              a={OrgPermissionSubjects.Identity}
+                            >
+                              {(isAllowed) => (
+                                <DropdownMenuItem
+                                  className={twMerge(
+                                    isAllowed
+                                      ? "hover:!bg-red-500 hover:!text-white"
+                                      : "pointer-events-none cursor-not-allowed opacity-50"
+                                  )}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handlePopUpOpen("deleteIdentity", {
+                                      identityId: id,
+                                      name
+                                    });
+                                  }}
+                                  disabled={!isAllowed}
+                                >
+                                  Delete Identity
+                                </DropdownMenuItem>
+                              )}
+                            </OrgPermissionCan>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </Td>
+                    </Tr>
+                  );
+                }
+              )}
           </TBody>
         </Table>
         {!isLoading && data && totalCount > 0 && (

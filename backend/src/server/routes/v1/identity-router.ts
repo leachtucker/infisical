@@ -98,6 +98,7 @@ export const registerIdentityRouter = async (server: FastifyZodProvider) => {
       body: z.object({
         name: z.string().trim().optional().describe(IDENTITIES.UPDATE.name),
         role: z.string().trim().min(1).optional().describe(IDENTITIES.UPDATE.role),
+        isDisabled: z.boolean().optional().describe(IDENTITIES.UPDATE.isDisabled),
         metadata: z
           .object({ key: z.string().trim().min(1), value: z.string().trim().min(1) })
           .array()

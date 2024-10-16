@@ -15,6 +15,7 @@ export type Identity = {
   authMethod?: IdentityAuthMethod;
   createdAt: string;
   updatedAt: string;
+  isDisabled: boolean;
 };
 
 export type IdentityAccessToken = {
@@ -89,6 +90,7 @@ export type UpdateIdentityDTO = {
   role?: string;
   organizationId: string;
   metadata?: { key: string; value: string }[];
+  isDisabled?: boolean;
 };
 
 export type DeleteIdentityDTO = {

@@ -12,6 +12,7 @@ export type TUpdateIdentityDTO = {
   role?: string;
   name?: string;
   metadata?: { key: string; value: string }[];
+  isDisabled?: boolean;
 } & Omit<TOrgPermission, "orgId">;
 
 export type TDeleteIdentityDTO = {
