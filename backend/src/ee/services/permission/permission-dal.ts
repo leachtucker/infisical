@@ -447,6 +447,7 @@ export const permissionDALFactory = (db: TDbClient) => {
         .select(
           db.ref("id").withSchema(TableName.IdentityProjectMembership).as("membershipId"),
           db.ref("name").withSchema(TableName.Identity).as("identityName"),
+          db.ref("isDisabled").withSchema(TableName.Identity).as("identityIsDisabled"),
           db.ref("orgId").withSchema(TableName.Project).as("orgId"), // Now you can select orgId from Project
           db.ref("createdAt").withSchema(TableName.IdentityProjectMembership).as("membershipCreatedAt"),
           db.ref("updatedAt").withSchema(TableName.IdentityProjectMembership).as("membershipUpdatedAt"),
@@ -479,7 +480,14 @@ export const permissionDALFactory = (db: TDbClient) => {
       const permission = sqlNestRelationships({
         data: docs,
         key: "membershipId",
-        parentMapper: ({ membershipId, membershipCreatedAt, membershipUpdatedAt, orgId, identityName }) => ({
+        parentMapper: ({
+          membershipId,
+          membershipCreatedAt,
+          membershipUpdatedAt,
+          orgId,
+          identityName,
+          identityIsDisabled
+        }) => ({
           id: membershipId,
           identityId,
           username: identityName,
@@ -488,7 +496,8 @@ export const permissionDALFactory = (db: TDbClient) => {
           updatedAt: membershipUpdatedAt,
           orgId,
           // just a prefilled value
-          orgAuthEnforced: false
+          orgAuthEnforced: false,
+          isDisabled: identityIsDisabled
         }),
         childrenMapper: [
           {

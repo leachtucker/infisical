@@ -266,6 +266,10 @@ export const permissionServiceFactory = ({
     if (!identityProjectPermission)
       throw new ForbiddenRequestError({ name: "Identity is not a member of the specified project" });
 
+    if (identityProjectPermission.isDisabled) {
+      throw new ForbiddenRequestError({ name: "Identity is disabled" });
+    }
+
     if (
       identityProjectPermission.roles.some(
         ({ role, permissions }) => role === ProjectMembershipRole.Custom && !permissions
