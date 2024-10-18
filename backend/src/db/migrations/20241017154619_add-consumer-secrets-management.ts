@@ -33,6 +33,7 @@ export async function up(knex: Knex): Promise<void> {
         deferrable: "deferred"
       });
       tb.index("consumerSecretId");
+      tb.timestamps(true, true, true);
     });
   }
 }

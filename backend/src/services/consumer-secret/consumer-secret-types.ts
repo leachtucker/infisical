@@ -12,7 +12,10 @@ export type TCreateConsumerSecretDTO = {
 export type TUpdateConsumerSecretDTO = {
   id: string;
   name?: string;
-  attributes?: (Omit<TConsumerSecretsAttributes, "consumerSecretId" | "id"> & { value: string; id?: string })[];
+  attributes?: (Omit<TConsumerSecretsAttributes, "consumerSecretId" | "id" | "createdAt" | "updatedAt"> & {
+    value: string;
+    id?: string;
+  })[];
 } & TGenericPermission;
 
 export type TDeleteConsumerSecretDTO = {

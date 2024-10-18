@@ -13,7 +13,9 @@ export const ConsumerSecretsAttributesSchema = z.object({
   id: z.string().uuid(),
   consumerSecretId: z.string().uuid(),
   key: z.string(),
-  encryptedValue: zodBuffer.nullable().optional()
+  encryptedValue: zodBuffer.nullable().optional(),
+  createdAt: z.date(),
+  updatedAt: z.date()
 });
 
 export type TConsumerSecretsAttributes = z.infer<typeof ConsumerSecretsAttributesSchema>;
