@@ -24,12 +24,16 @@ export type TCreateConsumerSecretDTO = {
 };
 
 export enum ConsumerSecretType {
-  WebLogin = "WebLogin"
+  WebLogin = "WebLogin",
+  CreditCard = "CreditCard"
 }
 
 export enum ConsumerSecretsAttributesKey {
   username = "username",
-  password = "password"
+  password = "password",
+  cardNumber = "cardNumber",
+  securityCode = "securityCode",
+  expirationDate = "expirationDate"
 }
 
 export type TConsumerSecretAttribute = {

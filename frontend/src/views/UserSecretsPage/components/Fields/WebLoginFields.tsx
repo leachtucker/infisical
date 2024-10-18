@@ -1,11 +1,9 @@
 import { Controller, useForm } from "react-hook-form";
-import { faCheck, faEdit, faTimes } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
 import { createNotification } from "@app/components/notifications";
-import { FormControl, IconButton, Tooltip } from "@app/components/v2";
+import { FormControl } from "@app/components/v2";
 import { useToggle } from "@app/hooks";
 import {
   ConsumerSecretsAttributesKey,
@@ -14,6 +12,7 @@ import {
 } from "@app/hooks/api/consumerSecrets";
 
 import { ConcealedField } from "./ConcealedField";
+import { FieldsButtons } from "./FieldsButtons";
 
 type Props = { consumerSecretId: string; attributes: TConsumerSecretAttribute[] };
 
@@ -26,7 +25,7 @@ const schema = z
 
 export type FormData = z.infer<typeof schema>;
 
-export const UserSecretsLoginFields = ({ consumerSecretId, attributes }: Props) => {
+export const WebLoginFields = ({ consumerSecretId, attributes }: Props) => {
   const usernameAttr = attributes.find(
     (attr) => attr.key === ConsumerSecretsAttributesKey.username
   );
@@ -35,6 +34,8 @@ export const UserSecretsLoginFields = ({ consumerSecretId, attributes }: Props) 
     (attr) => attr.key === ConsumerSecretsAttributesKey.password
   );
 
+  const [isEditMode, setIsEditMode] = useToggle();
+
   const form = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -42,8 +43,6 @@ export const UserSecretsLoginFields = ({ consumerSecretId, attributes }: Props) 
       password: passwordAttr?.value ?? ""
     }
   });
-
-  const [isEditMode, setIsEditMode] = useToggle();
 
   const { mutateAsync: mutateConsumerSecretAsync } = useUpdateConsumerSecret();
 
@@ -76,39 +75,17 @@ export const UserSecretsLoginFields = ({ consumerSecretId, attributes }: Props) 
   return (
     <form onSubmit={form.handleSubmit(onFormSubmit)} autoComplete="off">
       <div className="relative">
-        <div className="absolute -right-4 -top-4 z-10 flex items-center justify-end ">
-          {isEditMode ? (
-            <>
-              <Tooltip content="Cancel">
-                <IconButton
-                  key="cancel-edit-btn"
-                  onClick={setIsEditMode.toggle}
-                  variant="plain"
-                  ariaLabel="Save"
-                >
-                  <FontAwesomeIcon icon={faTimes} />
-                </IconButton>
-              </Tooltip>
-              <Tooltip content="Save">
-                <IconButton key="save-btn" type="submit" variant="plain" ariaLabel="Save">
-                  <FontAwesomeIcon icon={faCheck} />
-                </IconButton>
-              </Tooltip>
-            </>
-          ) : (
-            <Tooltip content="Edit">
-              <IconButton
-                key="edit-btn"
-                onClick={setIsEditMode.toggle}
-                variant="plain"
-                ariaLabel="Edit"
-              >
-                <FontAwesomeIcon icon={faEdit} />
-              </IconButton>
-            </Tooltip>
-          )}
+        <div className="absolute -right-4 -top-4 z-10 flex items-center justify-end">
+          <FieldsButtons
+            isEditMode={isEditMode}
+            onCancelClick={() => {
+              setIsEditMode.toggle();
+              form.reset();
+            }}
+            onEditClick={setIsEditMode.toggle}
+          />
         </div>
-        <div className="relative flex w-full flex-wrap gap-6">
+        <div className="flex w-full flex-wrap gap-6">
           <div className="flex-grow">
             <Controller
               control={form.control}
@@ -126,6 +103,7 @@ export const UserSecretsLoginFields = ({ consumerSecretId, attributes }: Props) 
                     readOnly={!isEditMode}
                     forceShow={isEditMode}
                     placeholder="empty"
+                    autoFocus
                   />
                 </FormControl>
               )}

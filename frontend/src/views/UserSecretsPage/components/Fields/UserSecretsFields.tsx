@@ -1,7 +1,8 @@
 import { Skeleton } from "@app/components/v2";
 import { ConsumerSecretType, useGetAttributesForSecret } from "@app/hooks/api/consumerSecrets";
 
-import { UserSecretsLoginFields } from "./UserSecretsLoginFields";
+import { CreditCardFields } from "./CreditCardFields";
+import { WebLoginFields } from "./WebLoginFields";
 
 type UserSecretsFieldsProps = {
   type: ConsumerSecretType;
@@ -18,7 +19,14 @@ export const UserSecretsFields = ({ type, consumerSecretId }: UserSecretsFieldsP
       {isLoading && <Skeleton className="h-[58px]" />}
 
       {!isLoading && data && type === ConsumerSecretType.WebLogin && (
-        <UserSecretsLoginFields
+        <WebLoginFields
+          consumerSecretId={consumerSecretId}
+          attributes={data.consumerSecretAttributes}
+        />
+      )}
+
+      {!isLoading && data && type === ConsumerSecretType.CreditCard && (
+        <CreditCardFields
           consumerSecretId={consumerSecretId}
           attributes={data.consumerSecretAttributes}
         />

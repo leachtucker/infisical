@@ -178,7 +178,8 @@ export enum SecretType {
 }
 
 export enum ConsumerSecretType {
-  WebLogin = "WebLogin"
+  WebLogin = "WebLogin",
+  CreditCard = "CreditCard"
 }
 
 export enum ProjectVersion {
