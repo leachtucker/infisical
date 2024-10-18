@@ -28,6 +28,11 @@ export async function up(knex: Knex): Promise<void> {
       tb.foreign("consumerSecretId").references("id").inTable(TableName.ConsumerSecrets).onDelete("CASCADE");
       tb.string("key").notNullable();
       tb.binary("encryptedValue");
+      tb.unique(["consumerSecretId", "key"], {
+        indexName: "secret_key_composite_uniqe",
+        deferrable: "deferred"
+      });
+      tb.index("consumerSecretId");
     });
   }
 }

@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { ConsumerSecretsAttributesSchema, ConsumerSecretsSchema, ConsumerSecretType } from "@app/db/schemas";
+import { CONSUMER_SECRETS } from "@app/lib/api-docs";
 import { readLimit, writeLimit } from "@app/server/config/rateLimiter";
 import { verifyAuth } from "@app/server/plugins/auth/verify-auth";
 import { AuthMode } from "@app/services/auth/auth-type";
@@ -13,19 +14,20 @@ export const registerConsumerSecretsRouter = async (server: FastifyZodProvider) 
       rateLimit: readLimit
     },
     schema: {
-      // params: z.object({
-      //   orgId: z.string().trim()
-      // }),
+      description: "List consumer secrets",
+      security: [
+        {
+          bearerAuth: []
+        }
+      ],
       response: {
-        // 200: z.object({
-        //   consumerSecrets: ConsumerSecretsEnriched.array()
-        // })
+        200: z.object({
+          consumerSecrets: ConsumerSecretsSchema.array()
+        })
       }
     },
     onRequest: verifyAuth([AuthMode.JWT, AuthMode.IDENTITY_ACCESS_TOKEN]),
     handler: async (req) => {
-      // todo: Decide on orgId param or org attached to auth
-
       const consumerSecrets = await server.services.consumerSecret.getConsumerSecrets({
         actorId: req.permission.id,
         actor: req.permission.type,
@@ -43,17 +45,25 @@ export const registerConsumerSecretsRouter = async (server: FastifyZodProvider) 
     config: {
       rateLimit: writeLimit
     },
+
     schema: {
+      description: "Create a consumer secret",
+      security: [
+        {
+          bearerAuth: []
+        }
+      ],
       body: z.object({
-        name: z.string(),
-        type: z.nativeEnum(ConsumerSecretType),
+        name: z.string().trim().describe(CONSUMER_SECRETS.CREATE_KEY.name),
+        type: z.nativeEnum(ConsumerSecretType).describe(CONSUMER_SECRETS.CREATE_KEY.type),
         attributes: z
           .object({
-            key: z.string(),
-            value: z.string()
+            key: z.string().trim(),
+            value: z.string().trim()
           })
           .array()
           .optional()
+          .describe(CONSUMER_SECRETS.CREATE_KEY.attributes)
       }),
       response: {
         200: z.object({
@@ -84,17 +94,24 @@ export const registerConsumerSecretsRouter = async (server: FastifyZodProvider) 
       rateLimit: writeLimit
     },
     schema: {
+      description: "Update consumer secret",
+      security: [
+        {
+          bearerAuth: []
+        }
+      ],
       params: z.object({
-        consumerSecretId: z.string()
+        consumerSecretId: z.string().trim()
       }),
       body: z.object({
-        name: z.string().optional(),
+        name: z.string().trim().optional().describe(CONSUMER_SECRETS.UPDATE_KEY.name),
         attributes: z
           .object({
-            id: z.string().optional(),
-            key: z.string(),
-            value: z.string()
+            id: z.string().trim().optional(),
+            key: z.string().trim(),
+            value: z.string().trim()
           })
+          .describe(CONSUMER_SECRETS.UPDATE_KEY.attributes)
           .array()
           .optional()
       }),
