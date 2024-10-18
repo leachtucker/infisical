@@ -12,25 +12,27 @@ type UserSecretsFieldsProps = {
 export const UserSecretsFields = ({ type, consumerSecretId }: UserSecretsFieldsProps) => {
   const { data, isLoading } = useGetAttributesForSecret(consumerSecretId);
 
-  console.log({ data });
-
   return (
     <div className="p-6">
-      {isLoading && <Skeleton className="h-[58px]" />}
+      {type === ConsumerSecretType.WebLogin &&
+        (isLoading || !data ? (
+          <Skeleton className="h-[58px]" />
+        ) : (
+          <WebLoginFields
+            consumerSecretId={consumerSecretId}
+            attributes={data.consumerSecretAttributes}
+          />
+        ))}
 
-      {!isLoading && data && type === ConsumerSecretType.WebLogin && (
-        <WebLoginFields
-          consumerSecretId={consumerSecretId}
-          attributes={data.consumerSecretAttributes}
-        />
-      )}
-
-      {!isLoading && data && type === ConsumerSecretType.CreditCard && (
-        <CreditCardFields
-          consumerSecretId={consumerSecretId}
-          attributes={data.consumerSecretAttributes}
-        />
-      )}
+      {type === ConsumerSecretType.CreditCard &&
+        (isLoading || !data ? (
+          <Skeleton className="h-[142px]" />
+        ) : (
+          <CreditCardFields
+            consumerSecretId={consumerSecretId}
+            attributes={data.consumerSecretAttributes}
+          />
+        ))}
     </div>
   );
 };
