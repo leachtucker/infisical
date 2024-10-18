@@ -22,7 +22,6 @@ type TConsumerSecretServiceFactoryDep = {
 export type TConsumerSecretServiceFactory = ReturnType<typeof consumerSecretServiceFactory>;
 
 // todo: implement permissions
-
 export const consumerSecretServiceFactory = ({
   consumerSecretDAL,
   consumerSecretAttributeDAL,
@@ -97,8 +96,8 @@ export const consumerSecretServiceFactory = ({
         await consumerSecretAttributeDAL.upsert(enrichedAttrs, "id", tx);
       }
 
-      const res = await consumerSecretDAL.findById(id, tx);
-      return res;
+      const updated = await consumerSecretDAL.findById(id, tx);
+      return updated;
     });
 
     return updatedConsumerSecret;

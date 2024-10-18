@@ -15,3 +15,7 @@ export type UpdateConsumerSecretAttributeDTO = {
 export type DeleteConsumerSecretAttributeDTO = {
   attributeId: string;
 } & TGenericPermission;
+
+export type TGetConsumerSecretAttributesForSecretDTO = {
+  consumerSecretId: string;
+} & TGenericPermission;
