@@ -59,6 +59,9 @@ import {
   TCertificateTemplates,
   TCertificateTemplatesInsert,
   TCertificateTemplatesUpdate,
+  TConsumerSecretsAttributes,
+  TConsumerSecretsAttributesInsert,
+  TConsumerSecretsAttributesUpdate,
   TDynamicSecretLeases,
   TDynamicSecretLeasesInsert,
   TDynamicSecretLeasesUpdate,
@@ -336,6 +339,7 @@ import {
   TWorkflowIntegrationsInsert,
   TWorkflowIntegrationsUpdate
 } from "@app/db/schemas";
+import { TConsumerSecrets, TConsumerSecretsInsert, TConsumerSecretsUpdate } from "@app/db/schemas/consumer-secrets";
 import {
   TExternalGroupOrgRoleMappings,
   TExternalGroupOrgRoleMappingsInsert,
@@ -679,6 +683,16 @@ declare module "knex/types/tables" {
       TSecretRotationOutputs,
       TSecretRotationOutputsInsert,
       TSecretRotationOutputsUpdate
+    >;
+    [TableName.ConsumerSecrets]: KnexOriginal.CompositeTableType<
+      TConsumerSecrets,
+      TConsumerSecretsInsert,
+      TConsumerSecretsUpdate
+    >;
+    [TableName.ConsumerSecretsAttributes]: KnexOriginal.CompositeTableType<
+      TConsumerSecretsAttributes,
+      TConsumerSecretsAttributesInsert,
+      TConsumerSecretsAttributesUpdate
     >;
     [TableName.Snapshot]: KnexOriginal.CompositeTableType<
       TSecretSnapshots,
