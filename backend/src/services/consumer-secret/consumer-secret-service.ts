@@ -48,10 +48,13 @@ export const consumerSecretServiceFactory = ({
       );
 
       if (attributes && attributes.length > 0) {
-        const { encryptor: secretManagerEncryptor } = await kmsService.createCipherPairWithDataKey({
-          type: KmsDataKey.Organization,
-          orgId: actorOrgId
-        });
+        const { encryptor: secretManagerEncryptor } = await kmsService.createCipherPairWithDataKey(
+          {
+            type: KmsDataKey.Organization,
+            orgId: actorOrgId
+          },
+          tx
+        );
 
         const enrichedAttrs = attributes.map((attr) => ({
           key: attr.key,
@@ -79,10 +82,13 @@ export const consumerSecretServiceFactory = ({
       }
 
       if (attributes && attributes.length > 0) {
-        const { encryptor: secretManagerEncryptor } = await kmsService.createCipherPairWithDataKey({
-          type: KmsDataKey.Organization,
-          orgId: actorOrgId
-        });
+        const { encryptor: secretManagerEncryptor } = await kmsService.createCipherPairWithDataKey(
+          {
+            type: KmsDataKey.Organization,
+            orgId: actorOrgId
+          },
+          tx
+        );
 
         const enrichedAttrs = attributes.map((attr) => ({
           id: attr.id,

@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { ConsumerSecretsAttributesSchema, ConsumerSecretsSchema, ConsumerSecretType } from "@app/db/schemas";
+import { EventType } from "@app/ee/services/audit-log/audit-log-types";
 import { CONSUMER_SECRETS } from "@app/lib/api-docs";
 import { readLimit, writeLimit } from "@app/server/config/rateLimiter";
 import { verifyAuth } from "@app/server/plugins/auth/verify-auth";
@@ -33,6 +34,18 @@ export const registerConsumerSecretsRouter = async (server: FastifyZodProvider) 
         actor: req.permission.type,
         actorAuthMethod: req.permission.authMethod,
         actorOrgId: req.permission.orgId
+      });
+
+      await server.services.auditLog.createAuditLog({
+        ...req.auditLogInfo,
+        orgId: req.permission.orgId,
+        event: {
+          type: EventType.GET_CONSUMER_SECRETS,
+          metadata: {
+            userId: req.permission.id,
+            orgId: req.permission.orgId
+          }
+        }
       });
 
       return { consumerSecrets };
@@ -81,6 +94,21 @@ export const registerConsumerSecretsRouter = async (server: FastifyZodProvider) 
         name: req.body.name,
         type: req.body.type,
         attributes: req.body.attributes
+      });
+
+      await server.services.auditLog.createAuditLog({
+        ...req.auditLogInfo,
+        orgId: req.permission.orgId,
+        event: {
+          type: EventType.CREATE_CONSUMER_SECRET,
+          metadata: {
+            userId: req.permission.id,
+            orgId: req.permission.orgId,
+            secretType: req.body.type,
+            secretId: consumerSecret.id,
+            secretName: consumerSecret.name
+          }
+        }
       });
 
       return { consumerSecret };
@@ -133,6 +161,20 @@ export const registerConsumerSecretsRouter = async (server: FastifyZodProvider) 
         attributes: req.body.attributes
       });
 
+      await server.services.auditLog.createAuditLog({
+        ...req.auditLogInfo,
+        orgId: req.permission.orgId,
+        event: {
+          type: EventType.UPDATE_CONSUMER_SECRET,
+          metadata: {
+            userId: req.permission.id,
+            orgId: req.permission.orgId,
+            secretId: consumerSecret.id,
+            secretName: consumerSecret.name
+          }
+        }
+      });
+
       return { consumerSecret };
     }
   });
@@ -161,6 +203,20 @@ export const registerConsumerSecretsRouter = async (server: FastifyZodProvider) 
         actorOrgId: req.permission.orgId,
         actorAuthMethod: req.permission.authMethod,
         id: req.params.consumerSecretId
+      });
+
+      await server.services.auditLog.createAuditLog({
+        ...req.auditLogInfo,
+        orgId: req.permission.orgId,
+        event: {
+          type: EventType.DELETE_CONSUMER_SECRET,
+          metadata: {
+            userId: req.permission.id,
+            orgId: req.permission.orgId,
+            secretId: consumerSecret.id,
+            secretName: consumerSecret.name
+          }
+        }
       });
 
       return { consumerSecret };
