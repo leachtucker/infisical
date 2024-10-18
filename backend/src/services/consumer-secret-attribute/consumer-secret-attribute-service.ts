@@ -23,7 +23,12 @@ export const consumerSecretAttributeServiceFactory = ({
   consumerSecretAttributeDAL,
   kmsService
 }: TConsumerSecretAttributeServiceFactoryDep) => {
-  const createConsumerSecretAttribute = async ({ actorOrgId, ...input }: CreateConsumerSecretAttributeDTO) => {
+  const createConsumerSecretAttribute = async ({
+    actorOrgId,
+    key,
+    value,
+    consumerSecretId
+  }: CreateConsumerSecretAttributeDTO) => {
     if (!actorOrgId) throw new UnauthorizedError({ message: "No organization ID provided in request" });
 
     const { encryptor: secretManagerEncryptor } = await kmsService.createCipherPairWithDataKey({
@@ -31,13 +36,11 @@ export const consumerSecretAttributeServiceFactory = ({
       orgId: actorOrgId
     });
 
-    const encryptedValue = input.value
-      ? secretManagerEncryptor({ plainText: Buffer.from(input.value) }).cipherTextBlob
-      : undefined;
+    const encryptedValue = value ? secretManagerEncryptor({ plainText: Buffer.from(value) }).cipherTextBlob : undefined;
 
     const createdAttribute = await consumerSecretAttributeDAL.create({
-      consumerSecretId: input.secretId,
-      key: input.key,
+      consumerSecretId,
+      key,
       encryptedValue
     });
 
@@ -46,16 +49,24 @@ export const consumerSecretAttributeServiceFactory = ({
 
   const updateConsumerSecretAttribute = async ({
     actorOrgId,
-    secretId,
-    ...input
+    consumerSecretId,
+    value,
+    key
   }: UpdateConsumerSecretAttributeDTO) => {
     if (!actorOrgId) throw new UnauthorizedError({ message: "No organization ID provided in request" });
 
+    const { encryptor: secretManagerEncryptor } = await kmsService.createCipherPairWithDataKey({
+      type: KmsDataKey.Organization,
+      orgId: actorOrgId
+    });
+
+    const encryptedValue = value ? secretManagerEncryptor({ plainText: Buffer.from(value) }).cipherTextBlob : undefined;
+
     const updatedAttribute = await consumerSecretAttributeDAL.update(
       {
-        consumerSecretId: secretId
+        consumerSecretId
       },
-      { ...input }
+      { key, encryptedValue }
     );
 
     return updatedAttribute;

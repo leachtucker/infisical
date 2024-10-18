@@ -17,7 +17,7 @@ export const UserSecretsSection = () => {
             // handlePopUpOpen("createSharedSecret");
           }}
         >
-          Create User Secret
+          Create Secret
         </Button>
       </div>
 

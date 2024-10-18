@@ -31,7 +31,7 @@ export const registerConsumerSecretsAttributesRouter = async (server: FastifyZod
         actor: req.permission.type,
         actorOrgId: req.permission.orgId,
         actorAuthMethod: req.permission.authMethod,
-        secretId: req.body.consumerSecretId,
+        consumerSecretId: req.body.consumerSecretId,
         key: req.body.key,
         value: req.body.value
       });

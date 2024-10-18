@@ -1,6 +1,9 @@
 import { TPermissionServiceFactory } from "@app/ee/services/permission/permission-service";
 import { UnauthorizedError } from "@app/lib/errors";
+import { TConsumerSecretAttributeDALFactory } from "@app/services/consumer-secret-attribute/consumer-secret-attribute-dal";
 
+import { TKmsServiceFactory } from "../kms/kms-service";
+import { KmsDataKey } from "../kms/kms-types";
 import { TConsumerSecretDALFactory } from "./consumer-secret-dal";
 import {
   TCreateConsumerSecretDTO,
@@ -11,6 +14,8 @@ import {
 
 type TConsumerSecretServiceFactoryDep = {
   consumerSecretDAL: TConsumerSecretDALFactory;
+  consumerSecretAttributeDAL: TConsumerSecretAttributeDALFactory;
+  kmsService: TKmsServiceFactory;
   permissionService: Pick<TPermissionServiceFactory, "getUserOrgPermission">;
 };
 
@@ -18,15 +23,49 @@ export type TConsumerSecretServiceFactory = ReturnType<typeof consumerSecretServ
 
 // todo: implement permissions
 
-export const consumerSecretServiceFactory = ({ consumerSecretDAL }: TConsumerSecretServiceFactoryDep) => {
-  const createConsumerSecret = async ({ actorId, actorOrgId, actorAuthMethod, ...input }: TCreateConsumerSecretDTO) => {
+export const consumerSecretServiceFactory = ({
+  consumerSecretDAL,
+  consumerSecretAttributeDAL,
+  kmsService
+}: TConsumerSecretServiceFactoryDep) => {
+  const createConsumerSecret = async ({
+    actorId,
+    actorOrgId,
+    actorAuthMethod,
+    attributes,
+    ...input
+  }: TCreateConsumerSecretDTO) => {
     if (!actorOrgId) throw new UnauthorizedError({ message: "No organization ID provided in request" });
 
-    const consumerSecret = await consumerSecretDAL.create({
-      name: input.name,
-      type: input.type,
-      userId: actorId,
-      orgId: actorOrgId
+    const consumerSecret = await consumerSecretDAL.transaction(async (tx) => {
+      const newSecret = await consumerSecretDAL.create(
+        {
+          name: input.name,
+          type: input.type,
+          userId: actorId,
+          orgId: actorOrgId
+        },
+        tx
+      );
+
+      if (attributes && attributes.length > 0) {
+        const { encryptor: secretManagerEncryptor } = await kmsService.createCipherPairWithDataKey({
+          type: KmsDataKey.Organization,
+          orgId: actorOrgId
+        });
+
+        const enrichedAttrs = attributes.map((attr) => ({
+          key: attr.key,
+          consumerSecretId: newSecret.id,
+          encryptedValue: attr.value
+            ? secretManagerEncryptor({ plainText: Buffer.from(attr.value) }).cipherTextBlob
+            : undefined
+        }));
+
+        await consumerSecretAttributeDAL.batchInsert(enrichedAttrs, tx);
+      }
+
+      return newSecret;
     });
 
     return consumerSecret;

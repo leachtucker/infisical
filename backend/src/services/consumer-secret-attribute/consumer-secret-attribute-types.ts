@@ -1,13 +1,13 @@
 import { TGenericPermission } from "@app/lib/types";
 
 export type CreateConsumerSecretAttributeDTO = {
-  secretId: string;
+  consumerSecretId: string;
   key: string;
   value: string;
 } & TGenericPermission;
 
 export type UpdateConsumerSecretAttributeDTO = {
-  secretId: string;
+  consumerSecretId: string;
   key: string;
   value: string;
 } & TGenericPermission;

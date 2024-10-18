@@ -64,12 +64,7 @@ export const UserSecretsRow = ({ row, onDeleteClick }: UserSecretsRowProps) => {
 
       {isFormExpanded && (
         <Tr>
-          <Td
-            colSpan={4}
-            className={`bg-bunker-600 px-0 py-0 ${
-              isFormExpanded && "border-b-2 border-mineshaft-500"
-            }`}
-          >
+          <Td colSpan={4} className="bg-bunker-600 px-0 py-0">
             <div>
               {row.type === ConsumerSecretType.WebLogin && (
                 <UserSecretsFields type={row.type} secretId={row.id} />

@@ -46,7 +46,14 @@ export const registerConsumerSecretsRouter = async (server: FastifyZodProvider) 
     schema: {
       body: z.object({
         name: z.string(),
-        type: z.nativeEnum(ConsumerSecretType)
+        type: z.nativeEnum(ConsumerSecretType),
+        attributes: z
+          .object({
+            key: z.string(),
+            value: z.string()
+          })
+          .array()
+          .optional()
       }),
       response: {
         200: z.object({
@@ -62,7 +69,8 @@ export const registerConsumerSecretsRouter = async (server: FastifyZodProvider) 
         actorOrgId: req.permission.orgId,
         actorAuthMethod: req.permission.authMethod,
         name: req.body.name,
-        type: req.body.type
+        type: req.body.type,
+        attributes: req.body.attributes
       });
 
       return { consumerSecret };

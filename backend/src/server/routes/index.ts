@@ -811,6 +811,8 @@ export const registerRoutes = async (
 
   const consumerSecretService = consumerSecretServiceFactory({
     consumerSecretDAL,
+    consumerSecretAttributeDAL,
+    kmsService,
     permissionService
   });
 
