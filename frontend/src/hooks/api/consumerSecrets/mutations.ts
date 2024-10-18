@@ -3,7 +3,12 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@app/config/request";
 
 import { consumerSecretsKeys } from "./queries";
-import { TConsumerSecret, TDeleteConsumerSecretDTO, TUpdateConsumerSecretDTO } from "./types";
+import {
+  TConsumerSecret,
+  TCreateConsumerSecretDTO,
+  TDeleteConsumerSecretDTO,
+  TUpdateConsumerSecretDTO
+} from "./types";
 
 export const useDeleteConsumerSecret = () => {
   const queryClient = useQueryClient();
@@ -33,10 +38,29 @@ export const useUpdateConsumerSecret = () => {
       return data.consumerSecret;
     },
     onSuccess: (_, payload) => {
-      queryClient.invalidateQueries(consumerSecretsKeys.allUserSecrets());
+      if (payload.name != null) {
+        queryClient.invalidateQueries(consumerSecretsKeys.allUserSecrets());
+      }
       if (payload.attributes) {
         queryClient.invalidateQueries(consumerSecretsKeys.attributesForSecret(payload.id));
       }
+    }
+  });
+};
+
+export const useCreateConsumerSecret = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<{}, {}, TCreateConsumerSecretDTO>({
+    mutationFn: async (dto) => {
+      const { data } = await apiRequest.post<{ consumerSecret: TConsumerSecret }>(
+        "/api/v1/consumer-secrets",
+        dto
+      );
+      return data.consumerSecret;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(consumerSecretsKeys.allUserSecrets());
     }
   });
 };

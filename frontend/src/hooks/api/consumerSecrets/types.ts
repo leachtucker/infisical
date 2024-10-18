@@ -18,6 +18,11 @@ export type TUpdateConsumerSecretDTO = {
   attributes: TUpdateConsumerSecretAttributeDTO[];
 };
 
+export type TCreateConsumerSecretDTO = {
+  name: string;
+  type: string;
+};
+
 export enum ConsumerSecretType {
   WebLogin = "WebLogin"
 }

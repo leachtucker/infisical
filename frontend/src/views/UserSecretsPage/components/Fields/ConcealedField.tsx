@@ -30,33 +30,35 @@ export const ConcealedField = ({ value, forceShow, ...props }: Props) => {
       value={value}
       type={isVisible ? "text" : "password"}
       rightIcon={
-        <div className="flex gap-[1px]">
-          <Tooltip content="Copy">
-            <IconButton
-              ariaLabel="copy-value"
-              onClick={handleCopyToClipboard}
-              variant="plain"
-              className="h-full"
-            >
-              <FontAwesomeIcon icon={faCopy} />
-            </IconButton>
-          </Tooltip>
-          {!forceShow && (
-            <Tooltip content={isConcealed ? "Reveal" : "Conceal"}>
+        value ? (
+          <div className="flex gap-[1px]">
+            <Tooltip content="Copy">
               <IconButton
+                ariaLabel="copy-value"
+                onClick={handleCopyToClipboard}
                 variant="plain"
-                ariaLabel={isConcealed ? "Reveal" : "Conceal"}
-                onClick={setIsConcealed.toggle}
+                className="h-full"
               >
-                {isConcealed ? (
-                  <FontAwesomeIcon icon={faEyeSlash} />
-                ) : (
-                  <FontAwesomeIcon icon={faEye} />
-                )}
+                <FontAwesomeIcon icon={faCopy} />
               </IconButton>
             </Tooltip>
-          )}
-        </div>
+            {!forceShow && (
+              <Tooltip content={isConcealed ? "Reveal" : "Conceal"}>
+                <IconButton
+                  variant="plain"
+                  ariaLabel={isConcealed ? "Reveal" : "Conceal"}
+                  onClick={setIsConcealed.toggle}
+                >
+                  {isConcealed ? (
+                    <FontAwesomeIcon icon={faEyeSlash} />
+                  ) : (
+                    <FontAwesomeIcon icon={faEye} />
+                  )}
+                </IconButton>
+              </Tooltip>
+            )}
+          </div>
+        ) : null
       }
     />
   );
