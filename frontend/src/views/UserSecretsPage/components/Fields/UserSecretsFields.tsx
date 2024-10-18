@@ -15,7 +15,7 @@ export const UserSecretsFields = ({ type, consumerSecretId }: UserSecretsFieldsP
 
   return (
     <div className="p-6">
-      {isLoading && <Skeleton className="h-16" />}
+      {isLoading && <Skeleton className="h-[58px]" />}
 
       {!isLoading && data && type === ConsumerSecretType.WebLogin && (
         <UserSecretsLoginFields

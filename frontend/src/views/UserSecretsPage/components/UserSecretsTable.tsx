@@ -19,7 +19,7 @@ import { useDeleteConsumerSecret, useGetUserConsumerSecrets } from "@app/hooks/a
 
 import { UserSecretsRow } from "./UserSecretsRow";
 
-// todo: Complete pagination
+// todo: Complete pagination & searching
 export const UserSecretsTable = () => {
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);

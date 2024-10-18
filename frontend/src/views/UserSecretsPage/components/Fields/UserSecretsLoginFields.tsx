@@ -122,10 +122,10 @@ export const UserSecretsLoginFields = ({ consumerSecretId, attributes }: Props) 
                 >
                   <ConcealedField
                     {...field}
-                    disabled={field.disabled || !isEditMode}
+                    isDisabled={field.disabled || !isEditMode}
                     readOnly={!isEditMode}
                     forceShow={isEditMode}
-                    placeholder="Empty"
+                    placeholder="empty"
                   />
                 </FormControl>
               )}
@@ -144,10 +144,10 @@ export const UserSecretsLoginFields = ({ consumerSecretId, attributes }: Props) 
                 >
                   <ConcealedField
                     {...field}
-                    disabled={field.disabled || !isEditMode}
+                    isDisabled={field.disabled || !isEditMode}
                     readOnly={!isEditMode}
                     forceShow={isEditMode}
-                    placeholder="Empty"
+                    placeholder="empty"
                   />
                 </FormControl>
               )}

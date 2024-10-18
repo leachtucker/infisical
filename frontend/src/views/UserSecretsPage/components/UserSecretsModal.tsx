@@ -22,20 +22,22 @@ type Props = {
 
 const schema = z
   .object({
-    name: z.string(),
-    type: z.string()
+    name: z.string().trim().min(1, "Enter a name"),
+    type: z.string().min(1, "Select a type")
   })
   .required();
 
 export type FormData = z.infer<typeof schema>;
 
+const defaultValues = {
+  name: "",
+  type: ""
+};
+
 export const UserSecretsModal = ({ popUp, handlePopUpToggle }: Props) => {
   const form = useForm<FormData>({
     resolver: zodResolver(schema),
-    defaultValues: {
-      name: "",
-      type: ""
-    }
+    defaultValues
   });
 
   const { mutateAsync: createConsumerSecret } = useCreateConsumerSecret();
@@ -47,7 +49,7 @@ export const UserSecretsModal = ({ popUp, handlePopUpToggle }: Props) => {
   const onFormSubmit = async (formData: FormData) => {
     try {
       await createConsumerSecret(formData);
-      form.reset();
+      form.reset(defaultValues);
       handlePopUpToggle("userSecrets", false);
       createNotification({ type: "success", text: "Successfully created secret!" });
     } catch (err) {
@@ -60,7 +62,6 @@ export const UserSecretsModal = ({ popUp, handlePopUpToggle }: Props) => {
       isOpen={popUp?.userSecrets?.isOpen}
       onOpenChange={(isOpen) => {
         handlePopUpToggle("userSecrets", isOpen);
-        // reset();
       }}
     >
       <ModalContent title="Create User Secret">
@@ -83,7 +84,6 @@ export const UserSecretsModal = ({ popUp, handlePopUpToggle }: Props) => {
           <Controller
             control={form.control}
             name="type"
-            defaultValue=""
             render={({ field: { onChange, ...field }, fieldState: { error } }) => (
               <FormControl
                 label="Type"
@@ -98,6 +98,7 @@ export const UserSecretsModal = ({ popUp, handlePopUpToggle }: Props) => {
                   onValueChange={(e) => onChange(e)}
                   className="w-full"
                   position="popper"
+                  placeholder="Select"
                 >
                   {(Object.values(ConsumerSecretType) || []).map((val) => (
                     <SelectItem value={val} key={`st-type-${val}`}>
@@ -110,11 +111,15 @@ export const UserSecretsModal = ({ popUp, handlePopUpToggle }: Props) => {
           />
 
           <div className="mt-7 flex items-center gap-4">
-            <Button isLoading={form.formState.isSubmitting} type="submit">
+            <Button
+              isLoading={form.formState.isSubmitting}
+              isDisabled={!form.formState.isDirty}
+              type="submit"
+            >
               Create Secret
             </Button>
             <Button
-              isLoading={form.formState.isSubmitting}
+              isDisabled={form.formState.isSubmitting}
               onClick={handleCancelClick}
               variant="plain"
               colorSchema="secondary"
