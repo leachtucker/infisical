@@ -65,7 +65,8 @@ export const WebLoginFields = ({ consumerSecretId, attributes }: Props) => {
         attributes: [nextUsernameAttr, nextPasswordAttr]
       });
 
-      setIsEditMode.timedToggle();
+      form.reset(formData);
+      setIsEditMode.off();
       createNotification({ type: "success", text: "Successfully updated secret!" });
     } catch (err) {
       console.error(err);
@@ -79,10 +80,10 @@ export const WebLoginFields = ({ consumerSecretId, attributes }: Props) => {
           <FieldsButtons
             isEditMode={isEditMode}
             onCancelClick={() => {
-              setIsEditMode.toggle();
+              setIsEditMode.off();
               form.reset();
             }}
-            onEditClick={setIsEditMode.toggle}
+            onEditClick={setIsEditMode.on}
           />
         </div>
         <div className="flex w-full flex-wrap gap-6">

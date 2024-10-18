@@ -64,7 +64,7 @@ export const UserSecretsTable = () => {
         <Table>
           <THead>
             <Tr>
-              <Th className="w-56">Name</Th>
+              <Th className="w-36">Name</Th>
               <Th className="w-24">Type</Th>
               <Th className="w-48">Created At</Th>
               <Th aria-label="button" className="w-5" />

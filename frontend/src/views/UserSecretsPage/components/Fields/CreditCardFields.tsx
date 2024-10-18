@@ -77,7 +77,7 @@ export const CreditCardFields = ({ consumerSecretId, attributes }: Props) => {
       });
 
       form.reset(formData);
-      setIsEditMode.timedToggle();
+      setIsEditMode.off();
       createNotification({ type: "success", text: "Successfully updated secret!" });
     } catch (err) {
       console.error(err);
@@ -91,10 +91,10 @@ export const CreditCardFields = ({ consumerSecretId, attributes }: Props) => {
           <FieldsButtons
             isEditMode={isEditMode}
             onCancelClick={() => {
-              setIsEditMode.toggle();
+              setIsEditMode.off();
               form.reset();
             }}
-            onEditClick={setIsEditMode.toggle}
+            onEditClick={setIsEditMode.on}
           />
         </div>
         <div className="flex w-full flex-wrap gap-y-4 gap-x-6">

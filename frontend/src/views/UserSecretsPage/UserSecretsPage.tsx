@@ -1,7 +1,7 @@
 import { UserSecretsSection } from "./components/UserSecretsSection";
 
 export const UserSecretsPage = () => {
-  // todo: Create docs and a link here
+  // todo: Create docs and add a link here
   return (
     <div className="container mx-auto h-full w-full max-w-7xl bg-bunker-800 px-6 text-white">
       <div className="flex items-center justify-between py-6">

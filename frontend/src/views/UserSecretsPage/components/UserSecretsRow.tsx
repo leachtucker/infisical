@@ -35,7 +35,7 @@ export const UserSecretsRow = ({ row, onDeleteClick }: UserSecretsRowProps) => {
       <Tr className="cursor-pointer" onClick={() => setIsFormExpanded.toggle()}>
         <Td>{row.name}</Td>
         <Td>
-          <Tag>{formattedSecretType}</Tag>
+          <Tag colorSchema="yellow">{formattedSecretType}</Tag>
         </Td>
         <Td>{formattedCreatedAtDate}</Td>
         <Td>
