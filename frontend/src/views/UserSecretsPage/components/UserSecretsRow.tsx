@@ -8,12 +8,14 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  Tag,
   Td,
   Tr
 } from "@app/components/v2";
 import { useToggle } from "@app/hooks";
 import { TConsumerSecret } from "@app/hooks/api/consumerSecrets";
 
+import { formatConsumerSecretTypeName } from "../utils";
 import { UserSecretsFields } from "./Fields/UserSecretsFields";
 
 type UserSecretsRowProps = {
@@ -27,11 +29,14 @@ export const UserSecretsRow = ({ row, onDeleteClick }: UserSecretsRowProps) => {
   const [isFormExpanded, setIsFormExpanded] = useToggle();
 
   const formattedCreatedAtDate = format(new Date(row.createdAt), "yyyy-MM-dd - HH:mm a");
+  const formattedSecretType = formatConsumerSecretTypeName(row.type);
   return (
     <>
       <Tr className="cursor-pointer" onClick={() => setIsFormExpanded.toggle()}>
         <Td>{row.name}</Td>
-        <Td>{row.type}</Td>
+        <Td>
+          <Tag>{formattedSecretType}</Tag>
+        </Td>
         <Td>{formattedCreatedAtDate}</Td>
         <Td>
           <DropdownMenu>

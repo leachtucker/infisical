@@ -1,11 +1,9 @@
-import { useState } from "react";
 import { faKey } from "@fortawesome/free-solid-svg-icons";
 
 import { createNotification } from "@app/components/notifications";
 import {
   DeleteActionModal,
   EmptyState,
-  Pagination,
   Table,
   TableContainer,
   TableSkeleton,
@@ -19,10 +17,8 @@ import { useDeleteConsumerSecret, useGetUserConsumerSecrets } from "@app/hooks/a
 
 import { UserSecretsRow } from "./UserSecretsRow";
 
-// todo: Complete pagination & searching
+// todo: Implement pagination & searching
 export const UserSecretsTable = () => {
-  const [page, setPage] = useState(1);
-  const [perPage, setPerPage] = useState(10);
   const { isLoading, data } = useGetUserConsumerSecrets();
 
   const { popUp, handlePopUpOpen, handlePopUpClose, handlePopUpToggle } = usePopUp([
@@ -68,9 +64,9 @@ export const UserSecretsTable = () => {
         <Table>
           <THead>
             <Tr>
-              <Th>Name</Th>
-              <Th>Type</Th>
-              <Th>Created At</Th>
+              <Th className="w-56">Name</Th>
+              <Th className="w-24">Type</Th>
+              <Th className="w-48">Created At</Th>
               <Th aria-label="button" className="w-5" />
             </Tr>
           </THead>
@@ -86,18 +82,6 @@ export const UserSecretsTable = () => {
               ))}
           </TBody>
         </Table>
-        {!isLoading &&
-          data?.consumerSecrets &&
-          data?.totalCount >= perPage &&
-          data?.totalCount !== undefined && (
-            <Pagination
-              count={data.totalCount}
-              page={page}
-              perPage={perPage}
-              onChangePage={(newPage) => setPage(newPage)}
-              onChangePerPage={(newPerPage) => setPerPage(newPerPage)}
-            />
-          )}
         {!isLoading && !data?.consumerSecrets?.length && (
           <EmptyState title="No user secrets created yet" icon={faKey} />
         )}

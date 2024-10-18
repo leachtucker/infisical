@@ -97,7 +97,7 @@ export const CreditCardFields = ({ consumerSecretId, attributes }: Props) => {
             onEditClick={setIsEditMode.toggle}
           />
         </div>
-        <div className="flex w-full flex-wrap gap-6">
+        <div className="flex w-full flex-wrap gap-y-4 gap-x-6">
           <div className="flex-grow basis-full">
             <Controller
               control={form.control}

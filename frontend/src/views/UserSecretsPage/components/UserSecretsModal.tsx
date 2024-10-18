@@ -15,6 +15,8 @@ import {
 import { ConsumerSecretType, useCreateConsumerSecret } from "@app/hooks/api/consumerSecrets";
 import { UsePopUpState } from "@app/hooks/usePopUp";
 
+import { formatConsumerSecretTypeName } from "../utils";
+
 type Props = {
   popUp: UsePopUpState<["userSecrets"]>;
   handlePopUpToggle: (popUpName: keyof UsePopUpState<["userSecrets"]>, state?: boolean) => void;
@@ -33,6 +35,11 @@ const defaultValues = {
   name: "",
   type: ""
 };
+
+const formattedTypesOptions = Object.values(ConsumerSecretType).map((type) => ({
+  label: formatConsumerSecretTypeName(type),
+  value: type
+}));
 
 export const UserSecretsModal = ({ popUp, handlePopUpToggle }: Props) => {
   const form = useForm<FormData>({
@@ -100,9 +107,9 @@ export const UserSecretsModal = ({ popUp, handlePopUpToggle }: Props) => {
                   position="popper"
                   placeholder="Select"
                 >
-                  {(Object.values(ConsumerSecretType) || []).map((val) => (
-                    <SelectItem value={val} key={`st-type-${val}`}>
-                      {val}
+                  {formattedTypesOptions.map((opt) => (
+                    <SelectItem value={opt.value} key={`st-type-${opt.value}`}>
+                      {opt.label}
                     </SelectItem>
                   ))}
                 </Select>
