@@ -70,6 +70,36 @@ export const registerConsumerSecretsRouter = async (server: FastifyZodProvider) 
   });
 
   server.route({
+    method: "DELETE",
+    url: "/:consumerSecretId",
+    config: {
+      rateLimit: writeLimit
+    },
+    schema: {
+      params: z.object({
+        consumerSecretId: z.string().trim()
+      }),
+      response: {
+        200: z.object({
+          consumerSecret: ConsumerSecretsSchema
+        })
+      }
+    },
+    onRequest: verifyAuth([AuthMode.JWT, AuthMode.IDENTITY_ACCESS_TOKEN]),
+    handler: async (req) => {
+      const consumerSecret = await server.services.consumerSecret.deleteConsumerSecret({
+        actorId: req.permission.id,
+        actor: req.permission.type,
+        actorOrgId: req.permission.orgId,
+        actorAuthMethod: req.permission.authMethod,
+        id: req.params.consumerSecretId
+      });
+
+      return { consumerSecret };
+    }
+  });
+
+  server.route({
     method: "GET",
     url: "/:consumerSecretId/attributes",
     config: {

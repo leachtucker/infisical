@@ -1,11 +1,11 @@
 import { FormLabel, Input } from "@app/components/v2";
 import { TConsumerSecretAttribute } from "@app/hooks/api/consumerSecrets";
 
-import { ConcealedField } from "./Fields/ConcealedField";
+import { ConcealedField } from "./ConcealedField";
 
-type UserSecretLoginFieldsProps = { attributes: TConsumerSecretAttribute[] };
+type UserSecretsLoginFieldsProps = { attributes: TConsumerSecretAttribute[] };
 
-export const UserSecretLoginFields = ({ attributes }: UserSecretLoginFieldsProps) => {
+export const UserSecretsLoginFields = ({ attributes }: UserSecretsLoginFieldsProps) => {
   const username = attributes.find((attr) => attr.key === "username")?.value ?? "";
   const password = attributes.find((attr) => attr.key === "password")?.value ?? "";
 

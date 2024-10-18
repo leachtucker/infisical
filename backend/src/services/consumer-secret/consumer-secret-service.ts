@@ -49,7 +49,7 @@ export const consumerSecretServiceFactory = ({ consumerSecretDAL }: TConsumerSec
   const deleteConsumerSecret = async ({ actorId, actorOrgId, id }: TDeleteConsumerSecretDTO) => {
     if (!actorOrgId) throw new UnauthorizedError({ message: "No organization ID provided in request" });
 
-    const deletedConsumerSecret = await consumerSecretDAL.delete({
+    const [deletedConsumerSecret] = await consumerSecretDAL.delete({
       id,
       userId: actorId,
       orgId: actorOrgId

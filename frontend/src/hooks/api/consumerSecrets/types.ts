@@ -18,3 +18,7 @@ export type TConsumerSecretAttribute = {
   key: string;
   value: string;
 };
+
+export type TDeleteConsumerSecretDTO = {
+  id: string;
+};

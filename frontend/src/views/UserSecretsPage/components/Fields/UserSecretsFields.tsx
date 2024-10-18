@@ -1,14 +1,14 @@
 import { Skeleton } from "@app/components/v2";
 import { ConsumerSecretType, useGetAttributesForSecret } from "@app/hooks/api/consumerSecrets";
 
-import { UserSecretLoginFields } from "../UserSecretLoginFields";
+import { UserSecretsLoginFields } from "./UserSecretsLoginFields";
 
-type UserSecretFieldsProps = {
+type UserSecretsFieldsProps = {
   type: ConsumerSecretType;
   secretId: string;
 };
 
-export const UserSecretFields = ({ type, secretId }: UserSecretFieldsProps) => {
+export const UserSecretsFields = ({ type, secretId }: UserSecretsFieldsProps) => {
   const { data, isLoading } = useGetAttributesForSecret(secretId);
 
   console.log({ data });
@@ -18,7 +18,7 @@ export const UserSecretFields = ({ type, secretId }: UserSecretFieldsProps) => {
       {isLoading && <Skeleton className="h-16" />}
 
       {!isLoading && data && type === ConsumerSecretType.WebLogin && (
-        <UserSecretLoginFields attributes={data.consumerSecretAttributes} />
+        <UserSecretsLoginFields attributes={data.consumerSecretAttributes} />
       )}
     </div>
   );
