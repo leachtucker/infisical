@@ -71,16 +71,35 @@ export const consumerSecretServiceFactory = ({
     return consumerSecret;
   };
 
-  const updateConsumerSecret = async ({
-    actorId,
-    actorOrgId,
-    actorAuthMethod,
-    id,
-    ...input
-  }: TUpdateConsumerSecretDTO) => {
+  const updateConsumerSecret = async ({ actorId, actorOrgId, id, name, attributes }: TUpdateConsumerSecretDTO) => {
     if (!actorOrgId) throw new UnauthorizedError({ message: "No organization ID provided in request" });
 
-    const updatedConsumerSecret = await consumerSecretDAL.update({ id, userId: actorId, orgId: actorOrgId }, input);
+    const updatedConsumerSecret = await consumerSecretDAL.transaction(async (tx) => {
+      if (name) {
+        await consumerSecretDAL.update({ id, userId: actorId, orgId: actorOrgId }, { name }, tx);
+      }
+
+      if (attributes && attributes.length > 0) {
+        const { encryptor: secretManagerEncryptor } = await kmsService.createCipherPairWithDataKey({
+          type: KmsDataKey.Organization,
+          orgId: actorOrgId
+        });
+
+        const enrichedAttrs = attributes.map((attr) => ({
+          id: attr.id,
+          key: attr.key,
+          consumerSecretId: id,
+          encryptedValue: attr.value
+            ? secretManagerEncryptor({ plainText: Buffer.from(attr.value) }).cipherTextBlob
+            : undefined
+        }));
+
+        await consumerSecretAttributeDAL.upsert(enrichedAttrs, "id", tx);
+      }
+
+      const res = await consumerSecretDAL.findById(id, tx);
+      return res;
+    });
 
     return updatedConsumerSecret;
   };

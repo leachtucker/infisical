@@ -23,14 +23,14 @@ export const useGetUserConsumerSecrets = () => {
   });
 };
 
-export const useGetAttributesForSecret = (secretId: string) => {
+export const useGetAttributesForSecret = (consumerSecretId: string) => {
   return useQuery({
-    queryKey: consumerSecretsKeys.attributesForSecret(secretId),
+    queryKey: consumerSecretsKeys.attributesForSecret(consumerSecretId),
     queryFn: async () => {
       const { data } = await apiRequest.get<{
         consumerSecretAttributes: TConsumerSecretAttribute[];
         totalCount: number;
-      }>(`/api/v1/consumer-secrets/${secretId}/attributes`);
+      }>(`/api/v1/consumer-secrets/${consumerSecretId}/attributes`);
 
       return data;
     }

@@ -1,3 +1,4 @@
+import { TConsumerSecretsAttributes } from "@app/db/schemas";
 import { TGenericPermission } from "@app/lib/types";
 
 import { CreateConsumerSecretAttributeDTO } from "../consumer-secret-attribute/consumer-secret-attribute-types";
@@ -10,8 +11,8 @@ export type TCreateConsumerSecretDTO = {
 
 export type TUpdateConsumerSecretDTO = {
   id: string;
-  name: string;
-  type: string;
+  name?: string;
+  attributes?: (Omit<TConsumerSecretsAttributes, "consumerSecretId" | "id"> & { value: string; id?: string })[];
 } & TGenericPermission;
 
 export type TDeleteConsumerSecretDTO = {

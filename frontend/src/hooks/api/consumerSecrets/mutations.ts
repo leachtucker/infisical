@@ -3,7 +3,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@app/config/request";
 
 import { consumerSecretsKeys } from "./queries";
-import { TConsumerSecret, TDeleteConsumerSecretDTO } from "./types";
+import { TConsumerSecret, TDeleteConsumerSecretDTO, TUpdateConsumerSecretDTO } from "./types";
 
 export const useDeleteConsumerSecret = () => {
   const queryClient = useQueryClient();
@@ -17,6 +17,26 @@ export const useDeleteConsumerSecret = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(consumerSecretsKeys.allUserSecrets());
+    }
+  });
+};
+
+export const useUpdateConsumerSecret = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<{}, {}, TUpdateConsumerSecretDTO>({
+    mutationFn: async (payload) => {
+      const { data } = await apiRequest.patch<{ consumerSecret: TConsumerSecret }>(
+        `/api/v1/consumer-secrets/${payload.id}`,
+        payload
+      );
+      return data.consumerSecret;
+    },
+    onSuccess: (_, payload) => {
+      queryClient.invalidateQueries(consumerSecretsKeys.allUserSecrets());
+      if (payload.attributes) {
+        queryClient.invalidateQueries(consumerSecretsKeys.attributesForSecret(payload.id));
+      }
     }
   });
 };

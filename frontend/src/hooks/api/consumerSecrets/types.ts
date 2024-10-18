@@ -8,8 +8,23 @@ export type TConsumerSecret = {
   updatedAt: string;
 };
 
+export type TDeleteConsumerSecretDTO = {
+  id: string;
+};
+
+export type TUpdateConsumerSecretDTO = {
+  id: string;
+  name?: string;
+  attributes: TUpdateConsumerSecretAttributeDTO[];
+};
+
 export enum ConsumerSecretType {
   WebLogin = "WebLogin"
+}
+
+export enum ConsumerSecretsAttributesKey {
+  username = "username",
+  password = "password"
 }
 
 export type TConsumerSecretAttribute = {
@@ -19,6 +34,9 @@ export type TConsumerSecretAttribute = {
   value: string;
 };
 
-export type TDeleteConsumerSecretDTO = {
-  id: string;
+export type TUpdateConsumerSecretAttributeDTO = {
+  id?: string;
+  consumerSecretId?: string;
+  key: string;
+  value: string;
 };

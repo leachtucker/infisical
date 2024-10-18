@@ -5,20 +5,23 @@ import { UserSecretsLoginFields } from "./UserSecretsLoginFields";
 
 type UserSecretsFieldsProps = {
   type: ConsumerSecretType;
-  secretId: string;
+  consumerSecretId: string;
 };
 
-export const UserSecretsFields = ({ type, secretId }: UserSecretsFieldsProps) => {
-  const { data, isLoading } = useGetAttributesForSecret(secretId);
+export const UserSecretsFields = ({ type, consumerSecretId }: UserSecretsFieldsProps) => {
+  const { data, isLoading } = useGetAttributesForSecret(consumerSecretId);
 
   console.log({ data });
 
   return (
-    <div className="px-6 py-4">
+    <div className="p-6">
       {isLoading && <Skeleton className="h-16" />}
 
       {!isLoading && data && type === ConsumerSecretType.WebLogin && (
-        <UserSecretsLoginFields attributes={data.consumerSecretAttributes} />
+        <UserSecretsLoginFields
+          consumerSecretId={consumerSecretId}
+          attributes={data.consumerSecretAttributes}
+        />
       )}
     </div>
   );
