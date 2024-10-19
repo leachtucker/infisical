@@ -19,12 +19,10 @@ export const useGetUserConsumerSecrets = (params: UseGetUserConsumerSecretsParam
   return useQuery({
     queryKey: consumerSecretsKeys.userSecretsBySearchTerm(params),
     queryFn: async () => {
-      const encodedParams = new URLSearchParams(params);
-
       const { data } = await apiRequest.get<{
         consumerSecrets: TConsumerSecret[];
         totalCount: number;
-      }>("/api/v1/consumer-secrets", { params: encodedParams });
+      }>("/api/v1/consumer-secrets", { params });
 
       return data;
     }
