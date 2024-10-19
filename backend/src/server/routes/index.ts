@@ -97,6 +97,10 @@ import { certificateTemplateDALFactory } from "@app/services/certificate-templat
 import { certificateTemplateEstConfigDALFactory } from "@app/services/certificate-template/certificate-template-est-config-dal";
 import { certificateTemplateServiceFactory } from "@app/services/certificate-template/certificate-template-service";
 import { cmekServiceFactory } from "@app/services/cmek/cmek-service";
+import { consumerSecretDALFactory } from "@app/services/consumer-secret/consumer-secret-dal";
+import { consumerSecretServiceFactory } from "@app/services/consumer-secret/consumer-secret-service";
+import { consumerSecretAttributeDALFactory } from "@app/services/consumer-secret-attribute/consumer-secret-attribute-dal";
+import { consumerSecretAttributeServiceFactory } from "@app/services/consumer-secret-attribute/consumer-secret-attribute-service";
 import { externalGroupOrgRoleMappingDALFactory } from "@app/services/external-group-org-role-mapping/external-group-org-role-mapping-dal";
 import { externalGroupOrgRoleMappingServiceFactory } from "@app/services/external-group-org-role-mapping/external-group-org-role-mapping-service";
 import { externalMigrationQueueFactory } from "@app/services/external-migration/external-migration-queue";
@@ -337,6 +341,9 @@ export const registerRoutes = async (
   const workflowIntegrationDAL = workflowIntegrationDALFactory(db);
 
   const externalGroupOrgRoleMappingDAL = externalGroupOrgRoleMappingDALFactory(db);
+
+  const consumerSecretDAL = consumerSecretDALFactory(db);
+  const consumerSecretAttributeDAL = consumerSecretAttributeDALFactory(db);
 
   const permissionService = permissionServiceFactory({
     permissionDAL,
@@ -800,6 +807,19 @@ export const registerRoutes = async (
     webhookDAL,
     projectEnvDAL,
     projectDAL
+  });
+
+  const consumerSecretService = consumerSecretServiceFactory({
+    consumerSecretDAL,
+    consumerSecretAttributeDAL,
+    kmsService,
+    permissionService
+  });
+
+  const consumerSecretAttributeService = consumerSecretAttributeServiceFactory({
+    consumerSecretAttributeDAL,
+    kmsService,
+    permissionService
   });
 
   const secretTagService = secretTagServiceFactory({ secretTagDAL, permissionService });
@@ -1332,7 +1352,9 @@ export const registerRoutes = async (
     slack: slackService,
     workflowIntegration: workflowIntegrationService,
     migration: migrationService,
-    externalGroupOrgRoleMapping: externalGroupOrgRoleMappingService
+    externalGroupOrgRoleMapping: externalGroupOrgRoleMappingService,
+    consumerSecret: consumerSecretService,
+    consumerSecretAttribute: consumerSecretAttributeService
   });
 
   const cronJobs: CronJob[] = [];

@@ -17,6 +17,8 @@ export * from "./certificate-secrets";
 export * from "./certificate-template-est-configs";
 export * from "./certificate-templates";
 export * from "./certificates";
+export * from "./consumer-secrets";
+export * from "./consumer-secrets-attributes";
 export * from "./dynamic-secret-leases";
 export * from "./dynamic-secrets";
 export * from "./external-kms";

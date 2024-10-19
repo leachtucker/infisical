@@ -49,6 +49,8 @@ export enum TableName {
   SecretFolder = "secret_folders",
   SecretFolderVersion = "secret_folder_versions",
   SecretImport = "secret_imports",
+  ConsumerSecrets = "consumer_secrets",
+  ConsumerSecretsAttributes = "consumer_secrets_attributes",
   Snapshot = "secret_snapshots",
   SnapshotSecret = "secret_snapshot_secrets",
   SnapshotFolder = "secret_snapshot_folders",
@@ -173,6 +175,11 @@ export enum SecretKeyEncoding {
 export enum SecretType {
   Shared = "shared",
   Personal = "personal"
+}
+
+export enum ConsumerSecretType {
+  WebLogin = "WebLogin",
+  CreditCard = "CreditCard"
 }
 
 export enum ProjectVersion {

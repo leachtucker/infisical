@@ -1385,3 +1385,15 @@ export const KMS = {
     ciphertext: "The ciphertext to be decrypted (base64 encoded)."
   }
 };
+
+export const CONSUMER_SECRETS = {
+  CREATE_KEY: {
+    name: "The name of the created consumer secret.",
+    type: "The type of the created consumer secret.",
+    attributes: "The list of attributes (credentials) to add for this secret."
+  },
+  UPDATE_KEY: {
+    name: "The updated name of this consumer secret.",
+    attributes: "The list of attributes (credentials) to update for this secret."
+  }
+};

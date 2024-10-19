@@ -17,7 +17,8 @@ const tagVariants = cva(
       colorSchema: {
         gray: "bg-mineshaft-500",
         red: "bg-red/80 text-bunker-100",
-        green: "bg-primary-800 text-white"
+        green: "bg-primary-800 text-white",
+        yellow: "bg-yellow/20 text-yellow"
       },
       size: {
         xs: "text-xs px-1 py-0.5",

@@ -1,3 +1,4 @@
+import { ConsumerSecretType } from "@app/db/schemas";
 import { SymmetricEncryption } from "@app/lib/crypto/cipher";
 import { TProjectPermission } from "@app/lib/types";
 import { ActorType } from "@app/services/auth/auth-type";
@@ -192,7 +193,11 @@ export enum EventType {
   CMEK_ENCRYPT = "cmek-encrypt",
   CMEK_DECRYPT = "cmek-decrypt",
   UPDATE_EXTERNAL_GROUP_ORG_ROLE_MAPPINGS = "update-external-group-org-role-mapping",
-  GET_EXTERNAL_GROUP_ORG_ROLE_MAPPINGS = "get-external-group-org-role-mapping"
+  GET_EXTERNAL_GROUP_ORG_ROLE_MAPPINGS = "get-external-group-org-role-mapping",
+  GET_CONSUMER_SECRETS = "get-consumer-secrets",
+  CREATE_CONSUMER_SECRET = "create-consumer-secret",
+  UPDATE_CONSUMER_SECRET = "update-consumer-secret",
+  DELETE_CONSUMER_SECRET = "delete-consumer-secret"
 }
 
 interface UserActorMetadata {
@@ -1618,6 +1623,45 @@ interface UpdateExternalGroupOrgRoleMappingsEvent {
   };
 }
 
+interface GetConsumerSecretsEvent {
+  type: EventType.GET_CONSUMER_SECRETS;
+  metadata: {
+    userId: string;
+    orgId: string;
+  };
+}
+
+interface CreateConsumerSecretEvent {
+  type: EventType.CREATE_CONSUMER_SECRET;
+  metadata: {
+    userId: string;
+    orgId: string;
+    secretType: ConsumerSecretType;
+    secretId: string;
+    secretName: string;
+  };
+}
+
+interface UpdateConsumerSecretEvent {
+  type: EventType.UPDATE_CONSUMER_SECRET;
+  metadata: {
+    userId: string;
+    orgId: string;
+    secretId: string;
+    secretName: string;
+  };
+}
+
+interface DeleteConsumerSecretEvent {
+  type: EventType.DELETE_CONSUMER_SECRET;
+  metadata: {
+    userId: string;
+    orgId: string;
+    secretId: string;
+    secretName: string;
+  };
+}
+
 export type Event =
   | GetSecretsEvent
   | GetSecretEvent
@@ -1766,4 +1810,8 @@ export type Event =
   | CmekEncryptEvent
   | CmekDecryptEvent
   | GetExternalGroupOrgRoleMappingsEvent
-  | UpdateExternalGroupOrgRoleMappingsEvent;
+  | UpdateExternalGroupOrgRoleMappingsEvent
+  | GetConsumerSecretsEvent
+  | CreateConsumerSecretEvent
+  | UpdateConsumerSecretEvent
+  | DeleteConsumerSecretEvent;
