@@ -3,7 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
 import { createNotification } from "@app/components/notifications";
-import { FormControl, Input } from "@app/components/v2";
+import { FormControl } from "@app/components/v2";
 import { useToggle } from "@app/hooks";
 import {
   ConsumerSecretsAttributesKey,
@@ -18,9 +18,9 @@ type Props = { consumerSecretId: string; attributes: TConsumerSecretAttribute[] 
 
 const schema = z
   .object({
-    cardNumber: z.string(),
-    securityCode: z.string(),
-    expirationDate: z.string()
+    cardNumber: z.string().trim(),
+    securityCode: z.string().trim(),
+    expirationDate: z.string().trim()
   })
   .required();
 
@@ -114,8 +114,9 @@ export const CreditCardFields = ({ consumerSecretId, attributes }: Props) => {
                     isDisabled={field.disabled || !isEditMode}
                     readOnly={!isEditMode}
                     forceShow={isEditMode}
-                    placeholder="empty"
+                    placeholder="1234 1234 1234 1234"
                     autoFocus
+                    pattern="^(?:\d[ -]*?){13,16}$"
                   />
                 </FormControl>
               )}
@@ -137,8 +138,9 @@ export const CreditCardFields = ({ consumerSecretId, attributes }: Props) => {
                     isDisabled={field.disabled || !isEditMode}
                     readOnly={!isEditMode}
                     forceShow={isEditMode}
-                    placeholder="empty"
-                    autoFocus
+                    placeholder="123"
+                    inputMode="numeric"
+                    pattern="\d{3}"
                   />
                 </FormControl>
               )}
@@ -155,13 +157,13 @@ export const CreditCardFields = ({ consumerSecretId, attributes }: Props) => {
                   className="mb-0"
                   label="Expiration Date"
                 >
-                  <Input
+                  <ConcealedField
                     {...field}
                     isDisabled={field.disabled || !isEditMode}
                     readOnly={!isEditMode}
-                    placeholder="empty"
-                    autoFocus
-                    type="date"
+                    placeholder="mm/yy"
+                    inputMode="numeric"
+                    pattern="^(0[1-9]|1[0-2])\/?([0-9]{4}|[0-9]{2})$"
                   />
                 </FormControl>
               )}

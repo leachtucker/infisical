@@ -18,8 +18,8 @@ type Props = { consumerSecretId: string; attributes: TConsumerSecretAttribute[] 
 
 const schema = z
   .object({
-    username: z.string(),
-    password: z.string()
+    username: z.string().trim(),
+    password: z.string().trim()
   })
   .required();
 
