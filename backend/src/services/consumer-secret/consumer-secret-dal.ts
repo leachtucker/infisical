@@ -6,13 +6,18 @@ import { ormify, selectAllTableCols } from "@app/lib/knex";
 
 export type TConsumerSecretDALFactory = ReturnType<typeof consumerSecretDALFactory>;
 
-type TGetConsumerSecretsForUserAndOrgParams = { userId: string; orgId: string; searchTerm?: string };
+type TGetConsumerSecretsForUserAndOrgParams = {
+  userId: string;
+  orgId: string;
+  searchTerm?: string;
+  secretType?: string;
+};
 
 export const consumerSecretDALFactory = (db: TDbClient) => {
   const conumserSecretOrm = ormify(db, TableName.ConsumerSecrets);
 
   const getConsumerSecretsForUserAndOrg = async (
-    { userId, orgId, searchTerm }: TGetConsumerSecretsForUserAndOrgParams,
+    { userId, orgId, searchTerm, secretType }: TGetConsumerSecretsForUserAndOrgParams,
     tx?: Knex
   ) => {
     let query = (tx || db.replicaNode())(TableName.ConsumerSecrets)
@@ -22,6 +27,12 @@ export const consumerSecretDALFactory = (db: TDbClient) => {
     if (searchTerm) {
       query = query.where((qb) => {
         void qb.whereILike("name", `%${searchTerm}%`);
+      });
+    }
+
+    if (secretType) {
+      query = query.where((qb) => {
+        void qb.where("type", secretType);
       });
     }
 

@@ -2,29 +2,29 @@ import { useQuery } from "@tanstack/react-query";
 
 import { apiRequest } from "@app/config/request";
 
-import { TConsumerSecret, TConsumerSecretAttribute } from "./types";
+import { ConsumerSecretType, TConsumerSecret, TConsumerSecretAttribute } from "./types";
 
 export const consumerSecretsKeys = {
   allUserSecrets: () => ["consumerSecrets"] as const,
-  userSecretsBySearchTerm: (searchTerm: string) => [
+  userSecretsBySearchTerm: (params: { searchTerm?: string; secretType?: ConsumerSecretType }) => [
     ...consumerSecretsKeys.allUserSecrets(),
-    { searchTerm }
+    { params }
   ],
   attributesForSecret: (secretId: string) => ["consumerSecretsAttributes", { secretId }]
 };
 
-export const useGetUserConsumerSecrets = (searchTerm: string) => {
+type UseGetUserConsumerSecretsParams = { searchTerm?: string; secretType?: ConsumerSecretType };
+
+export const useGetUserConsumerSecrets = (params: UseGetUserConsumerSecretsParams) => {
   return useQuery({
-    queryKey: consumerSecretsKeys.userSecretsBySearchTerm(searchTerm),
+    queryKey: consumerSecretsKeys.userSecretsBySearchTerm(params),
     queryFn: async () => {
-      const params = new URLSearchParams({
-        searchTerm
-      });
+      const encodedParams = new URLSearchParams(params);
 
       const { data } = await apiRequest.get<{
         consumerSecrets: TConsumerSecret[];
         totalCount: number;
-      }>("/api/v1/consumer-secrets", { params });
+      }>("/api/v1/consumer-secrets", { params: encodedParams });
 
       return data;
     }

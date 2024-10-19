@@ -13,3 +13,8 @@ export const getIconForConsumerSecretTypeName = (type: string) => {
   if (type === ConsumerSecretType.CreditCard) return faCreditCard;
   return null;
 };
+
+export const UserSecretTypesOptions = Object.values(ConsumerSecretType).map((type) => ({
+  label: formatConsumerSecretTypeName(type),
+  value: type
+}));

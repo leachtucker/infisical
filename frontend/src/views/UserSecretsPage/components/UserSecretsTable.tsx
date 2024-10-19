@@ -1,11 +1,18 @@
 import { useState } from "react";
-import { faKey, faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
+import { faCheckCircle, faKey, faList, faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { twMerge } from "tailwind-merge";
 
 import { createNotification } from "@app/components/notifications";
 import {
   DeleteActionModal,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
   EmptyState,
+  IconButton,
   Input,
   Table,
   TableContainer,
@@ -13,11 +20,17 @@ import {
   TBody,
   Th,
   THead,
+  Tooltip,
   Tr
 } from "@app/components/v2";
 import { useDebounce, usePopUp } from "@app/hooks";
-import { useDeleteConsumerSecret, useGetUserConsumerSecrets } from "@app/hooks/api/consumerSecrets";
+import {
+  ConsumerSecretType,
+  useDeleteConsumerSecret,
+  useGetUserConsumerSecrets
+} from "@app/hooks/api/consumerSecrets";
 
+import { getIconForConsumerSecretTypeName, UserSecretTypesOptions } from "../utils";
 import { UserSecretsRow } from "./UserSecretsRow";
 
 // todo: Implement pagination & searching
@@ -31,7 +44,12 @@ export const UserSecretsTable = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm] = useDebounce(searchTerm);
 
-  const { isLoading, data } = useGetUserConsumerSecrets(debouncedSearchTerm);
+  const [filteredSecretType, setFilteredSecretType] = useState<ConsumerSecretType | undefined>();
+
+  const { isLoading, data } = useGetUserConsumerSecrets({
+    searchTerm: debouncedSearchTerm,
+    secretType: filteredSecretType
+  });
 
   const onDeleteSecretSubmit = async (secretId: string) => {
     try {
@@ -64,15 +82,69 @@ export const UserSecretsTable = () => {
     });
   };
 
+  const isFilteringByType = Boolean(filteredSecretType);
+
   return (
     <>
-      <div>
+      <div className="flex gap-2">
         <Input
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           leftIcon={<FontAwesomeIcon icon={faMagnifyingGlass} />}
           placeholder="Search secrets..."
         />
+
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <IconButton
+              ariaLabel="Environments"
+              variant="plain"
+              size="sm"
+              className={twMerge(
+                "flex h-10 w-11 items-center justify-center overflow-hidden border border-mineshaft-600 bg-mineshaft-800 p-0 transition-all hover:border-primary/60 hover:bg-primary/10",
+                isFilteringByType && "border-primary/50 text-primary"
+              )}
+            >
+              <Tooltip content="Choose user secret types" className="mb-2">
+                <FontAwesomeIcon icon={faList} />
+              </Tooltip>
+            </IconButton>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Choose visible user secret types</DropdownMenuLabel>
+            {UserSecretTypesOptions.map((option) => {
+              const isSelected = filteredSecretType === option.value;
+              return (
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (!isSelected) {
+                      setFilteredSecretType(option.value);
+                    } else {
+                      setFilteredSecretType(undefined);
+                    }
+                  }}
+                  key={option.value}
+                  icon={
+                    <FontAwesomeIcon
+                      icon={faCheckCircle}
+                      className={`${isSelected && "text-primary-500"}`}
+                    />
+                  }
+                  iconPos="right"
+                >
+                  <div className="flex items-center gap-2">
+                    <FontAwesomeIcon
+                      icon={getIconForConsumerSecretTypeName(option.value)!}
+                      className="w-3"
+                    />
+                    {option.label}
+                  </div>
+                </DropdownMenuItem>
+              );
+            })}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
       <TableContainer className="mt-4">
         <Table>

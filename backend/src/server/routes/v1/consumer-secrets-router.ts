@@ -22,7 +22,8 @@ export const registerConsumerSecretsRouter = async (server: FastifyZodProvider) 
         }
       ],
       querystring: z.object({
-        searchTerm: z.string().trim().toLowerCase().optional()
+        searchTerm: z.string().trim().toLowerCase().optional(),
+        secretType: z.nativeEnum(ConsumerSecretType).optional()
       }),
       response: {
         200: z.object({
@@ -37,7 +38,8 @@ export const registerConsumerSecretsRouter = async (server: FastifyZodProvider) 
         actor: req.permission.type,
         actorAuthMethod: req.permission.authMethod,
         actorOrgId: req.permission.orgId,
-        searchTerm: req.query.searchTerm
+        searchTerm: req.query.searchTerm,
+        secretType: req.query.secretType
       });
 
       await server.services.auditLog.createAuditLog({

@@ -22,4 +22,4 @@ export type TDeleteConsumerSecretDTO = {
   id: string;
 } & TGenericPermission;
 
-export type TGetConsumerSecretsDTO = { searchTerm?: string } & TGenericPermission;
+export type TGetConsumerSecretsDTO = { searchTerm?: string; secretType?: string } & TGenericPermission;
