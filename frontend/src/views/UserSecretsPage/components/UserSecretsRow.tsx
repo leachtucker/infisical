@@ -40,7 +40,7 @@ export const UserSecretsRow = ({ row, onDeleteClick }: UserSecretsRowProps) => {
         <Td>{formattedCreatedAtDate}</Td>
         <Td>
           <DropdownMenu>
-            <DropdownMenuTrigger>
+            <DropdownMenuTrigger asChild>
               <div className="flex justify-center hover:text-primary-400 data-[state=open]:text-primary-400">
                 <FontAwesomeIcon size="sm" icon={faEllipsis} />
               </div>
