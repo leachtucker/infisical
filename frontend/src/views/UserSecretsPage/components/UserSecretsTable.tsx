@@ -1,9 +1,12 @@
-import { faKey } from "@fortawesome/free-solid-svg-icons";
+import { useState } from "react";
+import { faKey, faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { createNotification } from "@app/components/notifications";
 import {
   DeleteActionModal,
   EmptyState,
+  Input,
   Table,
   TableContainer,
   TableSkeleton,
@@ -12,20 +15,23 @@ import {
   THead,
   Tr
 } from "@app/components/v2";
-import { usePopUp } from "@app/hooks";
+import { useDebounce, usePopUp } from "@app/hooks";
 import { useDeleteConsumerSecret, useGetUserConsumerSecrets } from "@app/hooks/api/consumerSecrets";
 
 import { UserSecretsRow } from "./UserSecretsRow";
 
 // todo: Implement pagination & searching
 export const UserSecretsTable = () => {
-  const { isLoading, data } = useGetUserConsumerSecrets();
-
   const { popUp, handlePopUpOpen, handlePopUpClose, handlePopUpToggle } = usePopUp([
     "deleteUserSecret"
   ] as const);
 
   const { mutateAsync: deleteMutateAsync } = useDeleteConsumerSecret();
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm] = useDebounce(searchTerm);
+
+  const { isLoading, data } = useGetUserConsumerSecrets(debouncedSearchTerm);
 
   const onDeleteSecretSubmit = async (secretId: string) => {
     try {
@@ -60,18 +66,26 @@ export const UserSecretsTable = () => {
 
   return (
     <>
-      <TableContainer>
+      <div>
+        <Input
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          leftIcon={<FontAwesomeIcon icon={faMagnifyingGlass} />}
+          placeholder="Search secrets..."
+        />
+      </div>
+      <TableContainer className="mt-4">
         <Table>
           <THead>
             <Tr>
-              <Th className="w-36">Name</Th>
-              <Th className="w-24">Type</Th>
-              <Th className="w-48">Created At</Th>
+              <Th className="w-44">Name</Th>
+              <Th className="w-44">Type</Th>
+              <Th className="w-24">Created</Th>
               <Th aria-label="button" className="w-5" />
             </Tr>
           </THead>
           <TBody>
-            {isLoading && <TableSkeleton columns={7} innerKey="user-secrets" />}
+            {isLoading && <TableSkeleton columns={4} innerKey="user-secrets" />}
             {!isLoading &&
               data?.consumerSecrets?.map((row) => (
                 <UserSecretsRow

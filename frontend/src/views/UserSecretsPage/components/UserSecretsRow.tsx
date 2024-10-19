@@ -15,7 +15,7 @@ import {
 import { useToggle } from "@app/hooks";
 import { TConsumerSecret } from "@app/hooks/api/consumerSecrets";
 
-import { formatConsumerSecretTypeName } from "../utils";
+import { formatConsumerSecretTypeName, getIconForConsumerSecretTypeName } from "../utils";
 import { UserSecretsFields } from "./Fields/UserSecretsFields";
 
 type UserSecretsRowProps = {
@@ -24,24 +24,29 @@ type UserSecretsRowProps = {
 };
 
 // todo: Add permission checking for menu actions
-
 export const UserSecretsRow = ({ row, onDeleteClick }: UserSecretsRowProps) => {
   const [isFormExpanded, setIsFormExpanded] = useToggle();
 
-  const formattedCreatedAtDate = format(new Date(row.createdAt), "yyyy-MM-dd - HH:mm a");
+  const formattedCreatedAtDate = format(new Date(row.createdAt), "yyyy-MM-dd HH:mm a");
   const formattedSecretType = formatConsumerSecretTypeName(row.type);
+  const iconForSecretType = getIconForConsumerSecretTypeName(row.type);
   return (
     <>
       <Tr className="cursor-pointer" onClick={() => setIsFormExpanded.toggle()}>
         <Td>{row.name}</Td>
         <Td>
-          <Tag colorSchema="yellow">{formattedSecretType}</Tag>
+          <Tag colorSchema="yellow">
+            <div className="flex items-center gap-3">
+              {iconForSecretType ? <FontAwesomeIcon icon={iconForSecretType} /> : null}
+              {formattedSecretType}
+            </div>
+          </Tag>
         </Td>
         <Td>{formattedCreatedAtDate}</Td>
         <Td>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <div className="flex justify-center hover:text-primary-400 data-[state=open]:text-primary-400">
+              <div className="flex justify-end hover:text-primary-400 data-[state=open]:text-primary-400">
                 <FontAwesomeIcon size="sm" icon={faEllipsis} />
               </div>
             </DropdownMenuTrigger>

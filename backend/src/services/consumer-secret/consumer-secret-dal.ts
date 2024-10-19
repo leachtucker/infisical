@@ -6,22 +6,27 @@ import { ormify, selectAllTableCols } from "@app/lib/knex";
 
 export type TConsumerSecretDALFactory = ReturnType<typeof consumerSecretDALFactory>;
 
-type TGetConsumerSecretsForUserAndOrgParams = { userId: string; orgId: string };
+type TGetConsumerSecretsForUserAndOrgParams = { userId: string; orgId: string; searchTerm?: string };
 
 export const consumerSecretDALFactory = (db: TDbClient) => {
   const conumserSecretOrm = ormify(db, TableName.ConsumerSecrets);
 
   const getConsumerSecretsForUserAndOrg = async (
-    { userId, orgId }: TGetConsumerSecretsForUserAndOrgParams,
+    { userId, orgId, searchTerm }: TGetConsumerSecretsForUserAndOrgParams,
     tx?: Knex
   ) => {
-    const consumerSecrets = await (tx || db.replicaNode())(TableName.ConsumerSecrets)
+    let query = (tx || db.replicaNode())(TableName.ConsumerSecrets)
       .select(selectAllTableCols(TableName.ConsumerSecrets))
-      .where({ userId, orgId })
-      .orderBy("createdAt", "desc")
-      .groupBy(`${TableName.ConsumerSecrets}.id`);
+      .where({ userId, orgId });
 
-    return consumerSecrets;
+    if (searchTerm) {
+      query = query.where((qb) => {
+        void qb.whereILike("name", `%${searchTerm}%`);
+      });
+    }
+
+    const secrets = await query.orderBy("createdAt", "desc");
+    return secrets;
   };
 
   return {

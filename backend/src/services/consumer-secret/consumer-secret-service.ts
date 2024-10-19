@@ -121,12 +121,14 @@ export const consumerSecretServiceFactory = ({
     return deletedConsumerSecret;
   };
 
-  const getConsumerSecrets = async ({ actorId, actorOrgId }: TGetConsumerSecretsDTO) => {
+  const getConsumerSecrets = async ({ actorId, actorOrgId, searchTerm }: TGetConsumerSecretsDTO) => {
     if (!actorOrgId) throw new UnauthorizedError({ message: "No organization ID provided in request" });
+    console.log({ searchTerm });
 
     const consumerSecrets = await consumerSecretDAL.getConsumerSecretsForUserAndOrg({
       userId: actorId,
-      orgId: actorOrgId
+      orgId: actorOrgId,
+      searchTerm
     });
 
     return consumerSecrets;
