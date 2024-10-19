@@ -13,7 +13,7 @@ export const UserSecretsFields = ({ type, consumerSecretId }: UserSecretsFieldsP
   const { data, isLoading } = useGetAttributesForSecret(consumerSecretId);
 
   return (
-    <div className="p-6">
+    <div className="py-8 px-14">
       {type === ConsumerSecretType.WebLogin &&
         (isLoading || !data ? (
           <Skeleton className="h-[58px]" />
